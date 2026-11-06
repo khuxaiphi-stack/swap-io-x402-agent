@@ -1,0 +1,21 @@
+{
+  "name": "swap-io-x402-agent",
+  "version": "1.0.0",
+  "description": "Autonomous Solana Portfolio Rebalancer, Non-Custodial Swap/DCA Agent & x402 Pay-Per-Call SDK for Swap.io Hermes API (https://hermes.swap.io)",
+  "type": "module",
+  "main": "src/hermes-x402-client.mjs",
+  "scripts": {
+    "test": "node --test test/x402-agent.test.mjs",
+    "demo": "node src/live-demo.mjs"
+  },
+  "keywords": [
+    "solana",
+    "swap-io",
+    "x402",
+    "hermes",
+    "ai-agent",
+    "defi",
+    "superteam"
+  ],
+  "license": "MIT"
+}

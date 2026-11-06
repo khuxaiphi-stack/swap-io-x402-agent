@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Swap.io x402 Autonomous Portfolio Rebalancer — 75s Interactive Video & Live Demo</title>
+  <style>
+    :root {
+      --bg: #070b14;
+      --panel: #0f172a;
+      --accent: #00f5a0;
+      --accent2: #00d9f5;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    header {
+      max-width: 1120px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .badge {
+      background: rgba(0, 245, 160, 0.14);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .player-shell {
+      position: relative;
+      max-width: 1120px;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #050811;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .controls {
+      max-width: 1120px;
+      width: 100%;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 16px;
+      background: var(--panel);
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+    }
+    button {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #041019;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #1e293b;
+      color: var(--text);
+    }
+    .progress-bar {
+      flex: 1;
+      height: 8px;
+      background: #1e293b;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 0.15s linear;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1 style="font-size: 22px;">Swap.io <code>x402</code> Autonomous Portfolio Rebalancer (75s Pitch & Live Flow)</h1>
+      <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">
+        Powered by <code>https://hermes.swap.io</code> • HTTP 402 Atomic USDC Micropayments on Solana
+      </p>
+    </div>
+    <span class="badge">x402-solana • ~$0.003 USDC / Call</span>
+  </header>
+
+  <div class="player-shell">
+    <canvas id="stage" width="1920" height="1080"></canvas>
+  </div>
+
+  <div class="controls">
+    <button id="playBtn">Pause / Play (75s Pitch)</button>
+    <button id="prevBtn" class="secondary">◀ Prev Scene</button>
+    <button id="nextBtn" class="secondary">Next Scene ▶</button>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <span id="timerLabel" style="font-family: monospace; color: var(--muted);">00:00 / 01:15</span>
+  </div>
+
+  <script>
+    const SCENES = [
+      {
+        duration: 15,
+        tag: "SCENE 1 / 5 • THE USE CASE",
+        title: "Event-Driven Solana Portfolio Rebalancer Agent",
+        subtitle: "Why pay $99/mo for idle API keys when your AI agent only trades on volatility spikes?",
+        bullets: [
+          "• Agent monitors a 60% SOL / 40% USDC treasury locally for $0.00.",
+          "• 95% of the week, drift stays < 3.5% → Agent makes 0 swaps and spends $0.00.",
+          "• When volatility hits and drift exceeds 3.5%, the agent wakes up and calls hermes.swap.io via x402.",
+          "• Aggregates Jupiter, Raydium, Orca & Meteora in a single pay-per-call interface."
+        ],
+        code: `// Drift check costs $0.00 locally\nif (Math.abs(driftPct) < 3.5) {\n  return { action: 'HOLD_IDLE_ZERO_COST', usdcApiCost: 0 };\n}\n// Volatility spike (>3.5% drift) -> Wake up & call Swap.io Hermes x402!`
+      },
+      {
+        duration: 20,
+        tag: "SCENE 2 / 5 • THE x402 HANDSHAKE",
+        title: "How Swap.io x402 Works Under the Hood",
+        subtitle: "Zero API Keys. Zero Accounts. Atomic USDC Micropayments via HTTP 402.",
+        bullets: [
+          "1. DISCOVER (FREE): GET https://hermes.swap.io/v1/info → chains, tokens & DEX providers.",
+          "2. UNPAID QUOTE: POST /v1/swap/quote → Server returns HTTP 402 Payment Required ($0.003 USDC).",
+          "3. GASLESS USDC AUTH: Agent signs atomic USDC transfer (facilitator sponsors SOL gas!).",
+          "4. RETRY WITH X-PAYMENT: Server returns ranked quotes + X-PAYMENT-RESPONSE on-chain tx proof."
+        ],
+        code: `POST https://hermes.swap.io/v1/swap/quote\n< HTTP/1.1 402 Payment Required\n{\n  "x402Version": 1,\n  "accepts": [{ "scheme": "exact", "maxAmountRequired": "3007", "payTo": "BPz2u6...bMfD" }]\n}\n// Retry with Header: X-PAYMENT: <base64_signed_usdc_auth> -> 200 OK!`
+      },
+      {
+        duration: 15,
+        tag: "SCENE 3 / 5 • NON-CUSTODIAL EXECUTION",
+        title: "Local Enclave Signing + Conditional Limit & DCA Orders",
+        subtitle: "Private keys never leave the agent. Non-custodial end-to-end.",
+        bullets: [
+          "• POST /v1/swap/build-tx ($0.003 USDC) → Returns unsigned base64 VersionedTransaction.",
+          "• Agent signs locally inside its secure enclave and broadcasts to Solana mainnet.",
+          "• GET /v1/swap/status?chainKey=sol&id={txHash} → Track confirmation until finalized.",
+          "• Also supports POST /v1/orders/limit/create & POST /v1/orders/dca/create via x402!"
+        ],
+        code: `const buildRes = await hermes.buildSwapTransaction({ userAddress, quoteResponse });\nconst txHash  = await agentEnclave.signAndBroadcast(buildRes.data.serializedTransaction);\nconst status  = await hermes.getSwapStatus({ chainKey: 'sol', txHash });`
+      },
+      {
+        duration: 15,
+        tag: "SCENE 4 / 5 • WHY x402 BEATS API KEYS",
+        title: "x402 Pay-Per-Call vs. Legacy SaaS Subscriptions",
+        subtitle: "Built for autonomous machine-to-machine economies on Solana.",
+        bullets: [
+          "• Zero Onboarding Friction: No email, no KYC, no Stripe card, no expiring API keys.",
+          "• Parameter-Aware Pricing: Passing explicit slippageBps & providers lowers your per-call quote price!",
+          "• Failed Request Protection: If a quote or route fails, the agent is charged $0.00.",
+          "• 99.4% Cost Reduction: 100 rebalances/month costs ~$0.60 USDC instead of a $99/mo subscription."
+        ],
+        code: `// Parameter-aware cost optimization on Swap.io Hermes:\nawait hermes.getQuote({\n  inputMint: SOL_MINT, outputMint: USDC_MINT, amount: '1000000000',\n  slippageBps: 30,                       // Explicit slippage lowers x402 fee\n  providers: ['jupiter', 'raydium']      // Targeted providers lower compute cost\n});`
+      },
+      {
+        duration: 10,
+        tag: "SCENE 5 / 5 • WORKING CODEBASE & LIVE DEMO (+30% BONUS)",
+        title: "Open-Source SDK & Verified Test Suite on GitHub",
+        subtitle: "github.com/khuxaiphi-stack/swap-io-x402-agent",
+        bullets: [
+          "✔ Full HermesX402Client SDK (GET /v1/info, /v1/swap/quote, /v1/swap/build-tx, /v1/orders/*)",
+          "✔ AutonomousRebalancerAgent with drift threshold & X-PAYMENT-RESPONSE ledger verification",
+          "✔ Live HTTP 402 challenge capture against https://hermes.swap.io (live-hermes-402-trace.json)",
+          "✔ Built for @swapdotio & @Superteam • Try it now at https://swap.io"
+        ],
+        code: `$ node --test test/x402-agent.test.mjs\n✔ HermesX402Client handles HTTP 402 challenge & retries with X-PAYMENT\n✔ AutonomousRebalancerAgent spends $0.00 when idle & executes x402 swap on drift\nℹ pass 2 | fail 0`
+      }
+    ];
+
+    const TOTAL_SECONDS = SCENES.reduce((a, s) => a + s.duration, 0);
+    const canvas = document.getElementById('stage');
+    const ctx = canvas.getContext('2d');
+    let elapsed = 0;
+    let playing = true;
+    let lastTs = performance.now();
+
+    function getCurrentScene(sec) {
+      let acc = 0;
+      for (let i = 0; i < SCENES.length; i++) {
+        if (sec < acc + SCENES[i].duration) {
+          return { index: i, scene: SCENES[i], sceneElapsed: sec - acc };
+        }
+        acc += SCENES[i].duration;
+      }
+      return { index: SCENES.length - 1, scene: SCENES[SCENES.length - 1], sceneElapsed: 0 };
+    }
+
+    function render(now) {
+      const dt = (now - lastTs) / 1000;
+      lastTs = now;
+      if (playing) {
+        elapsed = (elapsed + dt) % TOTAL_SECONDS;
+      }
+
+      const { index, scene, sceneElapsed } = getCurrentScene(elapsed);
+      document.getElementById('progressFill').style.width = `${(elapsed / TOTAL_SECONDS) * 100}%`;
+      const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+      document.getElementById('timerLabel').textContent = `${fmt(elapsed)} / ${fmt(TOTAL_SECONDS)}`;
+
+      // Background
+      const grad = ctx.createLinearGradient(0, 0, 1920, 1080);
+      grad.addColorStop(0, '#050811');
+      grad.addColorStop(1, '#0f172a');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1920, 1080);
+
+      // Top Accent Bar
+      ctx.fillStyle = '#00f5a0';
+      ctx.fillRect(100, 88, 120, 6);
+
+      // Tag
+      ctx.fillStyle = '#00f5a0';
+      ctx.font = 'bold 26px system-ui, sans-serif';
+      ctx.fillText(scene.tag, 100, 140);
+
+      // Title
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = 'bold 58px system-ui, sans-serif';
+      ctx.fillText(scene.title, 100, 220);
+
+      // Subtitle
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = '32px system-ui, sans-serif';
+      ctx.fillText(scene.subtitle, 100, 278);
+
+      // Bullets Panel
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(100, 330, 1720, 320, 20);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '31px system-ui, sans-serif';
+      scene.bullets.forEach((b, idx) => {
+        ctx.fillText(b, 140, 400 + idx * 65);
+      });
+
+      // Terminal / Code Box
+      ctx.fillStyle = '#020617';
+      ctx.strokeStyle = '#00f5a0';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(100, 690, 1720, 290, 16);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#00f5a0';
+      ctx.font = '27px monospace';
+      const lines = scene.code.split('\n');
+      lines.forEach((line, idx) => {
+        ctx.fillText(line, 140, 755 + idx * 46);
+      });
+
+      requestAnimationFrame(render);
+    }
+
+    document.getElementById('playBtn').onclick = () => { playing = !playing; };
+    document.getElementById('prevBtn').onclick = () => {
+      const { index } = getCurrentScene(elapsed);
+      const target = Math.max(0, index - 1);
+      elapsed = SCENES.slice(0, target).reduce((a, s) => a + s.duration, 0);
+    };
+    document.getElementById('nextBtn').onclick = () => {
+      const { index } = getCurrentScene(elapsed);
+      const target = (index + 1) % SCENES.length;
+      elapsed = SCENES.slice(0, target).reduce((a, s) => a + s.duration, 0);
+    };
+
+    requestAnimationFrame(render);
+  </script>
+</body>
+</html>
